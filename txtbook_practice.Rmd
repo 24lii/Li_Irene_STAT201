@@ -1,0 +1,229 @@
+---
+subtitle: "STAT 201"
+author: "Irene Li"
+
+format:
+  html:
+    toc: true
+    embed-resources: true
+
+execute:
+  message: false
+  warning: false
+---
+CHAPTER 10 (control flow)
+
+```{r}
+
+#10.1
+s <- "Data Science"
+print(nchar(s))
+print(substr(s,5,nchar(s)))
+print(gsub("Data", "AI", s))
+
+```
+
+```{r}
+#10.2
+char_vec <- 'Getting a tattoo is not a nice experience'
+split <- strsplit(char_vec,"")[[1]] #so it's not a list of index 1
+count <- sum(split == "t")
+print(count)
+```
+
+
+```{r}
+#10.3
+sentence <- "She sells the sea shells on the sea shore during the summer"
+split <- strsplit(sentence, " ")[[1]]
+contains <- grepl("the", split)
+print(length(split[contains]))
+```
+
+
+```{r}
+#10.4
+my_num <- "0"
+print(typeof(my_num))
+my_num <- as.numeric(my_num)
+print(typeof(my_num))
+
+name <- "irene"
+num <- 9
+color <- "Blue"
+cat("my name is", name, "and my fav number is", num, "\n")
+
+less10 <- (num < 10)
+even <- (num %% 2 == 0)
+red <- (tolower(color) == "Red")
+neweven <- as.numeric(even)
+cat(less10, even, red, neweven)
+
+```
+
+
+#10.5
+input <- readline("age: ")
+age <- suppressWarnings(as.integer(input))
+
+while (is.na(age)) {
+  input <- readline("please enter a valid integer: ")
+  age <- suppressWarnings(as.integer(input))
+}
+
+if (age < 18) {
+  print("minor")
+} else {
+  print("adult")
+}
+
+
+CHAPTER 11 (functions)
+
+```{r}
+#11.1
+nletters <- function(word){
+  num_letters <- nchar(word)
+  return(num_letters)
+}
+word <- "cat"
+cat(word, "has", nletters(word), "letters")
+```
+
+```{r}
+#11.2
+die <- function(){
+  num <- sample(1:6,1)
+  return(num)
+}
+t <- 1
+while (t < 6){
+  t <- t+1
+  print(die())
+}
+```
+```{r}
+roll_die <- function(size=6, roll_times=1){
+  die <- (sample(1:size, roll_times, replace=TRUE))
+  mean <- mean(die)
+  sum <- sum(die)
+  max <- max(die)
+  min <- min(die)
+  return(c("die" = die, "mean" = mean, "sum" = sum, "max" = max, "min" = min))
+}
+new_die <- roll_die(8,2)
+print(new_die)
+paste("The average of", 2, "rolls with a die with", 8, "sides is", new_die["mean"])
+```
+
+#CHAPTER 12 (vectors)
+```{r}
+#12.1
+G <- c(3007, 3067, 3244, 3375,3574, 3828, 4146, 4336, 4696, 5032,5234,5609,6094,6726,7226,7801,8592,9453,10565,11674,12575,13976,14434,15544,17121,18237,19071,20039,21417,22857,23889,24342,25419,26387,27695,28691,29968,31459,32854,34515,36330,37134,37998,39490,41725,44123,46302,48050,48570,47195,48651,50066,51784,53291,55124,56763,57867,59915,62805,65095,63028,69288)
+years <- 1960:2021
+
+index1990 <- which(years == 1990)
+cat("gdp per capital in 1990 was:", G[index1990], "\n")
+
+cat("mean GDP:", mean(G), "median GDP:", median(G), "standard deviation:", sd(G), "\n")
+
+index50k <- which(G >= 50000)[1]
+cat("first year over 50,000:", years[index50k], "\n")
+
+cat("range is:", min(G), "-", max(G), "\n")
+
+change <- (G[2:length(G)] - G[1:length(G)-1])/G[1:length(G)-1]
+add1 <- function(num){
+  num <- num + 1
+}
+cyears <- add1(years) #NEED TO ADD 1 YEAR bc percent change is from year n+1
+indices <- which(change > .1)
+cat("years over 10% increase:", cyears[indices], "\n")
+
+maxgrowth <- max(change)
+indexmax <- which(change == maxgrowth)
+yearmax <- cyears[indexmax]
+cat("year with highest GDP growth:", yearmax, "\n")
+
+neg <- (change < 0)
+print(cyears[neg])
+
+```
+
+```{r}
+#12.2
+exp_marriage_age <- c('24','30','28','29','30','27','26','28','30+','26','28','30','30','30','probably never','30','25','25','30','28','30+ ','30','25','28','28','25','25','27','28','30','30','35','26','28','27','27','30','25','30','26','32','27','26','27','26','28','37','28','28','28','35','28','27','28','26','28','26','30','27','30','28','25','26','28','35','29','27','27','30','24','25','29','27','33','30','30','25','26','30','32','26','30','30','I wont','25','27','27','25','27','27','32','26','25','never','28','33','28','35','25','30','29','30','31','28','28','30','40','30','28','30','27','by 30','28','27','28','30-35','35','30','30','never','30','35','28','31','30','27','33','32','27','27','26','N/A','25','26','29','28','34','26','24','28','30','120','25','33','27','28','32','30','26','30','30','28','27','27','27','27','27','27','28','30','30','30','28','30','28','30','30','28','28','30','27','30','28','25','never','69','28','28','33','30','28','28','26','30','26','27','30','25','Never','27','27','25')
+
+marriagei <- as.integer(exp_marriage_age)
+marriagel <- !(is.na(marriagei))
+cleaned <- marriagei[marriagel]
+
+for (i in 1:length(cleaned)){
+  if (cleaned[i] > 80){
+    cleaned[i] <- 80
+  }
+}
+
+print(mean(cleaned))
+
+print(length(cleaned[cleaned >= 30]))
+
+```
+
+```{r}
+#12.3
+palindrome <- function(word){
+  wordsplit <- strsplit(word, "")[[1]]
+  reverse <- wordsplit[length(wordsplit):1]
+  #1. paste and collapse reverse
+  wordreversed <- paste(reverse, collapse = "") 
+  return(word == wordreversed)
+  #2. do: return (all(wordsplit == reverse))
+}
+words_vec <- c('fat', 'civic', 'radar', 'mountain', 'noon','papa')
+print(sapply(words_vec, palindrome))
+```
+
+#CHAPTER 13 (data structures)
+```{r}
+#13.1
+G <- c(3007, 3067, 3244, 3375,3574, 3828, 4146, 4336, 4696, 5032,5234,5609,6094,6726,7226,7801,8592,9453,10565,11674,12575,13976,14434,15544,17121,18237,19071,20039,21417,22857,23889,24342,25419,26387,27695,28691,29968,31459,32854,34515,36330,37134,37998,39490,41725,44123,46302,48050,48570,47195,48651,50066,51784,53291,55124,56763,57867,59915,62805,65095,63028,69288)
+
+MG <- cbind(G[-1], G[-length(G)])
+change <- (MG[,1] - MG[,2])/MG[,2]
+
+years <- 1961:2021
+print(years[change > .1])
+
+periods <- matrix(G, ncol = 5, byrow = TRUE)
+print(periods)
+rowmax <- apply(periods, 1, max) #middle value : 1 = rows, 2 = columns
+cat("maxes per 5yr periods:",rowmax, "\n")
+
+maxgdp <- max(G)
+#finding max year
+yrsG <- 1960:2021
+maxyr <- yrsG[which(G == maxgdp)]
+print(maxyr)
+#finding max period
+period_vec <- seq(1961, 2021, 5)
+wantednumber <- 0
+for (i in period_vec){
+  if (maxyr %in% i:i+4){
+    wantednumber <- i
+  }
+}
+start <- wantednumber
+end <- wantednumber + 4
+occured <- paste(start, "-", end) 
+cat("max gdp was", maxgdp, "in period", occured, "in year", maxyr, "\n")
+
+declining <- function(vector){
+  decreasing <- FALSE
+  return(all(diff(vector)<=0))
+}
+vec <- apply(periods, 1, declining)
+print(rownames(periods)[vec])
+
+```
+
